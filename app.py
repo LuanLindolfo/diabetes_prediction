@@ -82,6 +82,31 @@ with tab2:
         
         st.success("✅ Modelo carregado com sucesso! Preencha os dados abaixo.")
         
+        # Dicionário de tradução e mapeamento dos indicadores de saúde
+        mapeamento_labels = {
+            "HighBP": "Pressão Alta (HighBP)",
+            "BMI": "Índice de Massa Corporal (BMI)",
+            "HeartDiseaseorAttack": "Doença Cardíaca ou Infarto (HeartDiseaseorAttack)",
+            "Veggies": "Consumo de Vegetais (Veggies)",
+            "NoDocbcCost": "Sem Médico por Custo (NoDocbcCost)",
+            "PhysHlth": "Saúde Física (PhysHlth)",
+            "Age": "Idade (Age)",
+            "HighChol": "Colesterol Alto (HighChol)",
+            "Smoker": "Fumante (Smoker)",
+            "PhysActivity": "Atividade Física (PhysActivity)",
+            "HvyAlcoholConsump": "Consumo Excessivo de Álcool (HvyAlcoholConsump)",
+            "GenHlth": "Saúde Geral (GenHlth)",
+            "DiffWalk": "Dificuldade para Caminhar (DiffWalk)",
+            "Education": "Nível de Escolaridade (Education)",
+            "CholCheck": "Exame de Colesterol (CholCheck)",
+            "Stroke": "Acidente Vascular Cerebral / Derrame (Stroke)",
+            "Fruits": "Consumo de Frutas (Fruits)",
+            "AnyHealthcare": "Acesso à Saúde (AnyHealthcare)",
+            "MentHlth": "Saúde Mental (MentHlth)",
+            "Sex": "Sexo (Sex)",
+            "Income": "Renda (Income)"
+        }
+        
         with st.form("form_previsao"):
             st.subheader("Indicadores de Saúde")
             
@@ -91,7 +116,9 @@ with tab2:
             for i, feature in enumerate(features):
                 coluna_atual = cols[i % 3]
                 with coluna_atual:
-                    valor = st.number_input(f"Valor para {feature}", value=0.0)
+                    # Busca o nome amigável mapeado; se não encontrar, usa o nome original
+                    label_exibicao = mapeamento_labels.get(feature, feature)
+                    valor = st.number_input(label_exibicao, value=0.0)
                     valores_entrada.append(valor)
             
             botao_prever = st.form_submit_button("Gerar Previsão Diagnóstica", type="primary")
