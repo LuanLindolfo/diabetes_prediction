@@ -66,13 +66,12 @@ with tab1:
 
 
 # ==========================================
-# ABA 2: SIMULADOR (DEPLOY DO MODELO .PKL)
+# ABA 2: SIMULADOR (DEPLOY DO MODELO .PKL ATUALIZADO)
 # ==========================================
 with tab2:
     st.header("🔬 Simulador Clínico")
     st.markdown("Insira as informações de saúde do paciente para obter uma predição usando o modelo **SVM (Linear)**.")
     
-    # Tentativa de carregar o arquivo .pkl gerado no Notebook
     try:
         with open('modelo_diabetes_producao.pkl', 'rb') as arquivo:
             pacote = pickle.load(arquivo)
@@ -83,43 +82,31 @@ with tab2:
         
         st.success("✅ Modelo carregado com sucesso! Preencha os dados abaixo.")
         
-        # Como o dataset original tem 21 colunas (features), gerar um formulário dinâmico
         with st.form("form_previsao"):
             st.subheader("Indicadores de Saúde")
             
-            # Divide os inputs do formulário em 3 colunas para ficar bonito e compacto na tela
             cols = st.columns(3)
             valores_entrada = []
             
             for i, feature in enumerate(features):
                 coluna_atual = cols[i % 3]
                 with coluna_atual:
-                    # Cria um number_input genérico para cada feature
-                    # Na vida real, você poderia customizar (ex: idade = st.slider, fumante = st.selectbox)
                     valor = st.number_input(f"Valor para {feature}", value=0.0)
                     valores_entrada.append(valor)
             
-            # Botão grande para enviar os dados
             botao_prever = st.form_submit_button("Gerar Previsão Diagnóstica", type="primary")
             
             if botao_prever:
                 with st.spinner("Processando dados e consultando modelo..."):
-                    # 1. Transforma a lista de inputs em array e redimensiona
                     X_novo = np.array(valores_entrada).reshape(1, -1)
-                    
-                    # 2. Padroniza (Scala) usando o scaler exportado do notebook
                     X_novo_padronizado = scaler.transform(X_novo)
-                    
-                    # 3. Faz a previsão
                     previsao = modelo.predict(X_novo_padronizado)[0]
                     
                     st.write("---")
                     if previsao == 1:
                         st.error("🚨 **Atenção:** O modelo identificou um alto risco/indicadores compatíveis com DIABETES.")
-                        st.snow() # Opcional: efeito visual nativo do streamlit 
                     else:
                         st.success("🟢 **Resultado:** O paciente apresenta indicadores compatíveis com o grupo SAUDÁVEL.")
-                        st.balloons() # Opcional: efeito comemorativo nativo do streamlit
 
     except FileNotFoundError:
         st.warning("⚠️ Arquivo `modelo_diabetes_producao.pkl` não encontrado. Certifique-se de executar o último bloco do seu notebook para exportar o modelo e de rodar o Streamlit na mesma pasta.")
