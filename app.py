@@ -69,8 +69,8 @@ with tab1:
 # ABA 2: SIMULADOR (DEPLOY DO MODELO .PKL ATUALIZADO)
 # ==========================================
 with tab2:
-    st.header("🔬 Simulador Clínico")
-    st.markdown("Insira as informações de saúde do paciente para obter uma predição usando o modelo **SVM (Linear)**.")
+    st.header("🔬 Simulador Clínico Essencial")
+    st.markdown("Insira os **4 principais indicadores de saúde** do paciente para obter uma predição.")
     
     try:
         with open('modelo_diabetes_producao.pkl', 'rb') as arquivo:
@@ -82,44 +82,29 @@ with tab2:
         
         st.success("✅ Modelo carregado com sucesso! Preencha os dados abaixo.")
         
-        # Dicionário de tradução e mapeamento dos indicadores de saúde
+        # Dicionário de tradução reduzido apenas aos mais importantes
         mapeamento_labels = {
-            "HighBP": "Pressão Alta (HighBP)",
-            "BMI": "Índice de Massa Corporal (BMI)",
-            "HeartDiseaseorAttack": "Doença Cardíaca ou Infarto (HeartDiseaseorAttack)",
-            "Veggies": "Consumo de Vegetais (Veggies)",
-            "NoDocbcCost": "Sem Médico por Custo (NoDocbcCost)",
-            "PhysHlth": "Saúde Física (PhysHlth)",
-            "Age": "Idade (Age)",
-            "HighChol": "Colesterol Alto (HighChol)",
-            "Smoker": "Fumante (Smoker)",
-            "PhysActivity": "Atividade Física (PhysActivity)",
-            "HvyAlcoholConsump": "Consumo Excessivo de Álcool (HvyAlcoholConsump)",
-            "GenHlth": "Saúde Geral (GenHlth)",
-            "DiffWalk": "Dificuldade para Caminhar (DiffWalk)",
-            "Education": "Nível de Escolaridade (Education)",
-            "CholCheck": "Exame de Colesterol (CholCheck)",
-            "Stroke": "Acidente Vascular Cerebral / Derrame (Stroke)",
-            "Fruits": "Consumo de Frutas (Fruits)",
-            "AnyHealthcare": "Acesso à Saúde (AnyHealthcare)",
-            "MentHlth": "Saúde Mental (MentHlth)",
-            "Sex": "Sexo (Sex)",
-            "Income": "Renda (Income)"
+            "HighBP": "Pressão Alta (0 = Não, 1 = Sim)",
+            "HighChol": "Colesterol Alto (0 = Não, 1 = Sim)",
+            "BMI": "Índice de Massa Corporal (IMC)",
+            "Age": "Categoria de Idade (1 a 13)*" 
         }
         
         with st.form("form_previsao"):
-            st.subheader("Indicadores de Saúde")
+            st.subheader("Indicadores de Risco Principais")
             
-            cols = st.columns(3)
+            # Como são apenas 4 variáveis, 2 colunas ficam melhores no layout
+            cols = st.columns(2) 
             valores_entrada = []
             
             for i, feature in enumerate(features):
-                coluna_atual = cols[i % 3]
+                coluna_atual = cols[i % 2]
                 with coluna_atual:
-                    # Busca o nome amigável mapeado; se não encontrar, usa o nome original
                     label_exibicao = mapeamento_labels.get(feature, feature)
-                    valor = st.number_input(label_exibicao, value=0.0)
+                    valor = st.number_input(label_exibicao, value=0.0, step=1.0)
                     valores_entrada.append(valor)
+            
+            st.caption("*Nota sobre a idade: 1 = 18 a 24 anos | 9 = 60 a 64 anos | 13 = 80 anos ou mais.")
             
             botao_prever = st.form_submit_button("Gerar Previsão Diagnóstica", type="primary")
             
@@ -136,4 +121,4 @@ with tab2:
                         st.success("🟢 **Resultado:** O paciente apresenta indicadores compatíveis com o grupo SAUDÁVEL.")
 
     except FileNotFoundError:
-        st.warning("⚠️ Arquivo `modelo_diabetes_producao.pkl` não encontrado. Certifique-se de executar o último bloco do seu notebook para exportar o modelo e de rodar o Streamlit na mesma pasta.")
+        st.warning("⚠️ Arquivo `modelo_diabetes_producao.pkl` não encontrado. Execute o modelo de treinamento primeiro.")
